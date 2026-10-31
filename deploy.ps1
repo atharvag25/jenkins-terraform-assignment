@@ -3,11 +3,13 @@ $ErrorActionPreference = "Stop"
 
 $AppUrl = "http://127.0.0.1:5001/health"
 $Python = Join-Path $PSScriptRoot ".venv\Scripts\python.exe"
+$AppScript = Join-Path $PSScriptRoot "run_deploy.py"
 
 Write-Host "Checking existing deployment..."
 
 try {
     $response = Invoke-RestMethod -Uri $AppUrl -TimeoutSec 3
+
     if ($response.status -eq "healthy") {
         Write-Host "Application is already running and healthy."
         exit 0
@@ -21,12 +23,13 @@ if (-not (Test-Path $Python)) {
     throw "Python virtual environment not found: $Python"
 }
 
+if (-not (Test-Path $AppScript)) {
+    throw "Deployment entry point not found: $AppScript"
+}
+
 $Process = Start-Process `
     -FilePath $Python `
-    -ArgumentList @(
-        "-c",
-        "from app import app; app.run(host='127.0.0.1', port=5001)"
-    ) `
+    -ArgumentList "`"$AppScript`"" `
     -WorkingDirectory $PSScriptRoot `
     -PassThru `
     -RedirectStandardOutput (Join-Path $PSScriptRoot "deploy.log") `
