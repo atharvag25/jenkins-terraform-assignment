@@ -11,7 +11,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat 'py -3 -m venv .venv'
+                bat '"C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python311\\python.exe" -m venv .venv'
                 bat '.venv\\Scripts\\python.exe -m pip install --upgrade pip'
                 bat '.venv\\Scripts\\python.exe -m pip install -r requirements.txt'
             }
