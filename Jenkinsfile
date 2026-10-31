@@ -25,14 +25,19 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deployment stage will be configured next'
+                powershell '''
+                    & "$env:WORKSPACE\\deploy.ps1"
+                    if ($LASTEXITCODE -ne 0) {
+                        exit $LASTEXITCODE
+                    }
+                '''
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo 'CI/CD Pipeline completed successfully!'
         }
 
         failure {
